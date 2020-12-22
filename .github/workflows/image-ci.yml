@@ -1,0 +1,28 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USERNAME: cotyhamilton
+      IMAGE_ID: cotyhamilton/hello-deno:${{ github.run_id }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Login to DockerHub
+      uses: docker/login-action@v1 
+      with:
+        username: ${{ env.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build
+      run: docker build --file $DOCKERFILE --tag $IMAGE_ID $CONTEXT
+      env:
+        DOCKERFILE: hello/Dockerfile
+        CONTEXT: hello
+    - name: Push
+      run: docker push $IMAGE_ID

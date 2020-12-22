@@ -27,5 +27,5 @@ jobs:
     - name: Push
       run: docker push $DOCKERHUB_USERNAME/$IMAGE_REPO:${{ github.run_id }}
     - name: Push Latest
-      if: github.ref == 'ref/head/main'
+      if: github.ref == 'refs/heads/main'
       run: docker push $DOCKERHUB_USERNAME/$IMAGE_REPO:latest

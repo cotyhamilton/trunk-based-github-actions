@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOCKERHUB_USERNAME: cotyhamilton
-      IMAGE_ID: cotyhamilton/hello-deno:${{ github.run_id }}
+      IMAGE_REPO: hello-deno
     steps:
     - uses: actions/checkout@v2
     - name: Login to DockerHub
@@ -20,9 +20,12 @@ jobs:
         username: ${{ env.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Build
-      run: docker build --file $DOCKERFILE --tag $IMAGE_ID $CONTEXT
+      run: docker build --file $DOCKERFILE --tag $DOCKERHUB_USERNAME/$IMAGE_REPO:${{ github.run_id }} --tag $DOCKERHUB_USERNAME/$IMAGE_REPO:latest $CONTEXT
       env:
         DOCKERFILE: hello/Dockerfile
         CONTEXT: hello
     - name: Push
-      run: docker push $IMAGE_ID
+      run: docker push $DOCKERHUB_USERNAME/$IMAGE_REPO:${{ github.run_id }}
+    - name: Push Latest
+      if: github.ref == 'ref/head/main'
+      run: docker push $DOCKERHUB_USERNAME/$IMAGE_REPO:latest

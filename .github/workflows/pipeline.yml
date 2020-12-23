@@ -9,10 +9,8 @@ on:
     inputs:
       deployStaging:
         description: Deploy to Staging
-        default: 'false'
       deployProduction:
         description: Deploy to Production
-        default: 'false'
 
 jobs:
   build:

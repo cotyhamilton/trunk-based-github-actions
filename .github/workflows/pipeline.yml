@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+    inputs:
+      deployStaging:
+        description: Deploy to Staging
+        default: 'false'
+      deployProduction:
+        description: Deploy to Production
+        default: 'false'
 
 jobs:
   build:
@@ -32,9 +39,17 @@ jobs:
       run: docker push $DOCKERHUB_USERNAME/$IMAGE_REPO:latest
   staging:
     needs: build
-#     if: github.ref == 'refs/heads/action'
+    if: github.ref == 'refs/heads/main' || github.event.inputs.deployStaging == 'true'
     runs-on: ubuntu-latest
     environment: staging
     steps:
-      - name: testing
-        run: echo ${{ github.run_id }} ${{ github.event_name }}
+      - name: Deploy
+        run: echo Deploying ${{ github.run_id }} to Staging
+  production:
+    needs: staging
+    if: github.ref == 'refs/heads/main' || github.event.inputs.deployProduction == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy
+        run: echo Deploying ${{ github.run_id }} to Production

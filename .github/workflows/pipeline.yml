@@ -1,10 +1,11 @@
-name: Docker Image CI
+name: Pipeline
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -29,3 +30,11 @@ jobs:
     - name: Push Latest
       if: github.ref == 'refs/heads/main'
       run: docker push $DOCKERHUB_USERNAME/$IMAGE_REPO:latest
+  staging:
+    needs: build
+#     if: github.ref == 'refs/heads/action'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: testing
+        run: echo ${{ github.run_id }} ${{ github.event_name }}
